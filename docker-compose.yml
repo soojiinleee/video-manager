@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: video_app
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis1
+#      - redis2
+#      - redis3
+    networks:
+      - video_network
+
+  db:
+    image: postgres:15-alpine
+    container_name: video_db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - video-data:/var/lib/postgresql/data
+    networks:
+      - video_network
+
+  redis1:
+    image: redis:7-alpine
+    container_name: redis_node1
+    ports:
+      - "63791:6379"
+    networks:
+      - video_network
+
+#  redis2:
+#    image: redis:7-alpine
+#    container_name: redis_node2
+#    ports:
+#      - "63792:6379"
+#    networks:
+#      - video_network
+#
+#  redis3:
+#    image: redis:7-alpine
+#    container_name: redis_node3
+#    ports:
+#      - "63793:6379"
+#    networks:
+#      - video_network
+
+#  celery:
+#    build: .
+#    container_name: video_celery
+#    command: celery -A src.core.celery.app worker --loglevel=info
+#    env_file:
+#      - .env
+#    depends_on:
+#      - app
+#      - redis1
+#    volumes:
+#      - .:/app
+#    networks:
+#      - video_network
+
+#  celery_beat:
+#    build: .
+#    container_name: video_celery_beat
+#    command: celery -A src.core.celery.app beat --loglevel=info
+#    env_file:
+#      - .env
+#    depends_on:
+#      - app
+#      - redis1
+#    volumes:
+#      - .:/app
+#    networks:
+#      - video_network
+
+
+volumes:
+  video-data:
+  redis-data:
+
+networks:
+  video_network:
+    name: video_network
+
+
+
